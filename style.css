@@ -1,0 +1,53 @@
+* {
+  box-sizing: border-box;
+}
+
+/* body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: min(80vh, 80vw);
+  width: min(80vh, 80vw);
+  overflow: hidden;
+} */
+
+#board {
+  display:grid;
+  grid-template-columns: repeat(16, 1fr);
+  grid-template-rows: repeat(16, 1fr);
+  /* width: 100vw;
+  height: 100vh; */
+  /* min-width: 100%;
+  min-height: 100%; */
+  
+}
+.BoardField {
+  /* width: 6.25vw;
+  height: 6.25vw; */
+  background-color: green;
+  border: 0.1rem solid black;
+  /* display: flex;
+  justify-content: center;
+  align-items: center; */
+  font-size: 2rem;
+  color:white;
+}
+#c255 {
+  background-color: red;
+}
+
+.Visited {
+  background-color: purple;
+}
+
+.Player {
+  background-color: blue;
+}
+
+.Bomb{
+transition: all 0.7s ease-in
+}
+
+#instruction{
+  margin:auto;
+}
