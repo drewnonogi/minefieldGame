@@ -1,0 +1,2 @@
+# minefieldGame
+Simple JavaScript game.
