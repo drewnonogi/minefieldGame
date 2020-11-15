@@ -1,13 +1,23 @@
 let currentIndex = 0
 let width = 16
-let bombArr = []
-let route = safeRoute()
 let minesAmount = 20
+let safeRoad = safeRoute()
+let bombArr = []
+let board = []
+let visited = []
+let lost = false
+
 
 let startButton = document.getElementById("startButton")
-startButton.addEventListener("click", ()=>{
-  createBoard(width)
-} )
+startButton.addEventListener("click", () => {
+  createBoard()
+})
+
+function playSound(element) {
+  const audio = document.getElementById(`${element}`);
+  audio.currentTime = 0;
+  audio.play();
+}
 
 function checkMines() {
   let detectedCounter = 0
@@ -35,23 +45,23 @@ function checkMines() {
 }
 
 function safeRoute() {
-  let route = [0]
+  let safeRoad = [0]
   let routeEnd = 0
-  while (routeEnd != 255 || route.length < 150) {
+  while (routeEnd != 255 || safeRoad.length < 150) {
     let direction = Math.floor(Math.random() * 8)
     switch (direction) {
       case 1:
         if (routeEnd % width != 0) {
           routeEnd -= 1
         }
-        route.push(routeEnd)
+        safeRoad.push(routeEnd)
         break;
 
       case 2:
         if (routeEnd - width >= 0) {
           routeEnd -= width
         }
-        route.push(routeEnd)
+        safeRoad.push(routeEnd)
         break;
 
       case 3:
@@ -60,7 +70,7 @@ function safeRoute() {
         if (routeEnd % width < width - 1) {
           routeEnd += 1
         }
-        route.push(routeEnd)
+        safeRoad.push(routeEnd)
         break;
 
       case 6:
@@ -70,54 +80,31 @@ function safeRoute() {
         if (routeEnd + width < width * width) {
           routeEnd += width
         }
-        route.push(routeEnd)
+        safeRoad.push(routeEnd)
         break;
     }
   }
-  return route
+  return safeRoad
 }
 
 function setMines(minesAmount) {
-  bombArr = []
+  let bombArr = []
   let i = 0
   while (i < minesAmount) {
     let bomb = Math.floor(Math.random() * 254)
-    if (bombArr.indexOf(bomb) == -1 && !(route.includes(bomb))) {
+    if (bombArr.indexOf(bomb) == -1 && !(safeRoad.includes(bomb))) {
       bombArr.push(bomb)
       i++
     }
   }
-}
-
-function createBoard(boardWidth) {
-  let container = document.getElementById("container")
-  container.innerHTML = ""
-  currentIndex = 0
-  document.addEventListener('keyup', movePlayer)
-  hideMines()
-  setMines(minesAmount)
-  let board = document.createElement("div")
-  board.setAttribute("id", "board")
-  for (let i = 0; i < boardWidth ** 2; i++) {
-    let newDiv = document.createElement("div")
-    newDiv.setAttribute("id", `c${i}`)
-    newDiv.setAttribute("class", "BoardField")
-    if (bombArr.includes(i)) {
-      newDiv.classList.add("Bomb")
-    }
-    board.appendChild(newDiv)
-  }
-  container.appendChild(board)
-
-  let start = document.getElementById("c0")
-  start.classList.add("Player")
-  start.classList.add("Visited")
-
-  checkMines()
+  return bombArr
 }
 
 function movePlayer(e) {
-  document.getElementById(`c${currentIndex}`).classList.remove('Player')
+  let lastIndex = currentIndex
+  if ([37, 38, 39, 40, 65, 68, 83, 87].includes(e.keyCode)) {
+    playSound("steps")
+  }
   switch (e.keyCode) {
     case (37):
     case (65):
@@ -136,17 +123,18 @@ function movePlayer(e) {
       if (currentIndex + width < width * width) currentIndex += width
       break
   }
-  let currentCell = document.getElementById(`c${currentIndex}`)
-  currentCell.classList.add('Player')
-  currentCell.classList.add('Visited')
+  if (!visited.includes(currentIndex)) {
+    visited.push(currentIndex)
+  }
+  let nextIndex = currentIndex
   checkGameOver()
   checkMines()
-
+  displayVisited()
+  displayPlayer(lastIndex, nextIndex)
 }
-function checkGameOver() {
-  let field = document.getElementById(`c${currentIndex}`)
 
-  if (field.id == "c255") {
+function checkGameOver() {
+  if (currentIndex == 255) {
     alert(
       `You Won!
     Try something harder now!`
@@ -155,43 +143,66 @@ function checkGameOver() {
     if (minesAmount <= 40) {
       minesAmount += 3
     }
-    window.setTimeout(createBoard, 3000, width)
+    window.setTimeout(createBoard, 3000)
 
-  } else if (field.classList.contains("Bomb")) {
-    let destroyed = document.getElementById(`c${currentIndex}`)
-    destroyed.classList.add("Destroyed")
-    alert("You Lost")
+  } else if (bombArr.includes(currentIndex)) {
+    playSound("boom")
+
+    alert(`You Lost
+    Try again`)
     revealMines()
-    window.setTimeout(createBoard, 3000, width)
+    window.setTimeout(createBoard, 3000)
   }
 }
+
+function displayVisited() {
+  let field = document.getElementById(`c${currentIndex}`)
+  field.classList.add("Visited")
+}
+
+function displayPlayer(lastIndex, nextIndex) {
+  let last = document.getElementById(`c${lastIndex}`)
+  let next= document.getElementById(`c${nextIndex}`)
+  last.classList.remove("Player")
+  next.classList.add("Player")
+}
+
+function createBoard() {
+  currentIndex = 0
+  bombArr = setMines(minesAmount)
+  document.addEventListener('keyup', movePlayer)
+  board = new Array(width ** 2).fill("E")
+  lost = false
+  for (let i = 0; i < board.length; i++) {
+    if (bombArr.includes(board[i])) {
+      board[i] = "B"
+    }
+  }
+  renderBoard(board)
+};
+
+function renderBoard(boardPlan) {
+  let container = document.getElementById("container")
+  container.innerHTML = ""
+  let board = document.createElement("div")
+  board.id = "board"
+  
+  for (let i = 0; i < boardPlan.length; i++) {
+    let field = document.createElement("div")
+    field.classList.add("BoardField")
+    field.id = `c${i}`
+    board.appendChild(field)
+  }
+  container.appendChild(board)
+  let start= document.getElementById(`c${0}`)
+  start.classList.add("Player","Visited")
+  checkMines()
+}
+
 function revealMines() {
-  let style = document.createElement("style");
   document.removeEventListener('keyup', movePlayer)
-  style.innerHTML = `
-  .Bomb {
-  background-color: black
-  }
-  .Destroyed {
-    background-color: orange
-  }
-  `;
-  document.head.appendChild(style);
+  bombArr.forEach(bomb => {
+    let field = document.getElementById(`c${bomb}`)
+    field.classList.add("Bomb")
+  });
 }
-function hideMines() {
-  let style = document.createElement("style");
-  style.innerHTML = `
-  .Bomb {
-    background-color: green
-    }
-    .Destroyed {
-    background-color: green
-
-    }
-  `;
-  document.head.appendChild(style);
-}
-
-
-
-
