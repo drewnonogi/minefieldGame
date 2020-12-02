@@ -6,7 +6,7 @@ let bombArr = []
 let board = []
 let visited = []
 let lost = false
-
+let invincible = false
 
 let startButton = document.getElementById("startButton")
 startButton.addEventListener("click", () => {
@@ -145,7 +145,7 @@ function checkGameOver() {
     }
     window.setTimeout(createBoard, 3000)
 
-  } else if (bombArr.includes(currentIndex)) {
+  } else if (bombArr.includes(currentIndex) && !invincible) {
     playSound("boom")
 
     alert(`You Lost
@@ -162,7 +162,7 @@ function displayVisited() {
 
 function displayPlayer(lastIndex, nextIndex) {
   let last = document.getElementById(`c${lastIndex}`)
-  let next= document.getElementById(`c${nextIndex}`)
+  let next = document.getElementById(`c${nextIndex}`)
   last.classList.remove("Player")
   next.classList.add("Player")
 }
@@ -186,7 +186,7 @@ function renderBoard(boardPlan) {
   container.innerHTML = ""
   let board = document.createElement("div")
   board.id = "board"
-  
+
   for (let i = 0; i < boardPlan.length; i++) {
     let field = document.createElement("div")
     field.classList.add("BoardField")
@@ -194,8 +194,8 @@ function renderBoard(boardPlan) {
     board.appendChild(field)
   }
   container.appendChild(board)
-  let start= document.getElementById(`c${0}`)
-  start.classList.add("Player","Visited")
+  let start = document.getElementById(`c${0}`)
+  start.classList.add("Player", "Visited")
   checkMines()
 }
 
@@ -206,3 +206,16 @@ function revealMines() {
     field.classList.add("Bomb")
   });
 }
+const pressed = [];
+const secretCode = 'ArrowUpArrowUpArrowDownArrowDownArrowLeftArrowRightArrowLeftArrowRightba';
+
+// konami code
+window.addEventListener('keyup', (e) => {
+  pressed.push(e.key);
+  pressed.splice(-10, pressed.length - 10);
+  if (pressed.join('').includes(secretCode)) {
+    console.log('DING!');
+    alert("You're invincible")
+    invincible = true
+  }
+});
