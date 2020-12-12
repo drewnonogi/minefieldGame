@@ -41,7 +41,13 @@ function checkMines() {
       detectedCounter++
     }
   }
-  document.getElementById(`c${currentIndex}`).innerText = detectedCounter
+  renderDetectedMines(detectedCounter)
+}
+
+function renderDetectedMines(amount) {
+  let field=document.getElementById(`c${currentIndex}`)
+  let counter=field.querySelector("p")
+  counter.innerText=amount
 }
 
 function safeRoute() {
@@ -185,12 +191,14 @@ function renderBoard(boardPlan) {
   let container = document.getElementById("container")
   container.innerHTML = ""
   let board = document.createElement("div")
-  board.id = "board"
+  board.classList.add("Board")
 
   for (let i = 0; i < boardPlan.length; i++) {
     let field = document.createElement("div")
+    let paragraph=document.createElement("p")
     field.classList.add("BoardField")
     field.id = `c${i}`
+    field.appendChild(paragraph)
     board.appendChild(field)
   }
   container.appendChild(board)

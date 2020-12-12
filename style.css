@@ -1,37 +1,79 @@
 * {
   box-sizing: border-box;
-
 }
 
-body {
-  /* display: flex;
-  justify-content: center;
-  align-items: center;
-  height: min(80vh, 80vw);
-  width: min(80vh, 80vw); */
+body,
+html {
+  min-height: 100%;
+  min-width: 100%;
   overflow: hidden;
 }
+body {
+  background: linear-gradient(-45deg, #a70202, #871bc5, #23a6d5, #1713df);
+  background-size: 400% 400%;
+  animation: gradient 15s ease infinite;
+}
 
-#board {
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+#container {
+}
+
+.Board {
+  margin: auto;
   display: grid;
   grid-template-columns: repeat(16, 1fr);
-  grid-template-rows: repeat(16, 1fr);
-  /* width: 100vw;
-  height: 100vh; */
-  /* min-width: 100%;
-  min-height: 100%; */
+  border: 0.5rem solid black;
+  /* width: 90vw; */
+  /* height: 90vh; */
+  /* max-width: 100vw; */
+  max-height: 90vh;
+  max-width: 90vh;
+
+  /* grid-template-rows: repeat(16, 1fr); */
+
+  /* min-width: 100%; */
+  /* min-height: 100%; */
 }
+
 .BoardField {
   /* width: 6.25vw;
   height: 6.25vw; */
   background-color: green;
   border: 0.1rem solid black;
+  font-size: 90%;
   /* display: flex;
   justify-content: center;
   align-items: center; */
-  font-size: 2rem;
   color: white;
+  text-align: center;
+  display: grid;
+  min-height: 0;
+  min-width: 0;
 }
+
+.BoardField::before {
+  content: "";
+  padding-bottom: 100%;
+  display: block;
+  grid-area: 1 / 1 / 2 / 2;
+}
+
+.BoardField > p {
+  grid-area: 1 / 1 / 2 / 2;
+  margin: auto;
+}
+
 #c255 {
   background-color: red;
 }
@@ -50,6 +92,7 @@ body {
   transition: all 0.8s ease-in;
   background-color: black;
 }
+
 .Destroyed {
   background-color: orange;
 }
