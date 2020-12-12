@@ -27,6 +27,7 @@ body {
 }
 
 #container {
+  
 }
 
 .Board {
@@ -51,7 +52,7 @@ body {
   height: 6.25vw; */
   background-color: green;
   border: 0.1rem solid black;
-  font-size: 90%;
+
   /* display: flex;
   justify-content: center;
   align-items: center; */
@@ -72,6 +73,8 @@ body {
 .BoardField > p {
   grid-area: 1 / 1 / 2 / 2;
   margin: auto;
+  font-size: 1.5rem;
+  font-weight: 900;
 }
 
 #c255 {
